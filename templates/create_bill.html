@@ -18,6 +18,7 @@
             <option value="{{ customer.id }}">{{ customer.name }}</option>
             {% endfor %}
         </select>
+        <input type="number" id="bill_no" name="bill_no" value="" placeholder="Enter Bill Number" required>
         <input type="hidden" id="bill_id" name="bill_id" value="">
 
         <h2>Add Product</h2>
@@ -62,49 +63,67 @@
         </tfoot>
     </table>
 
+    <!-- Export Button -->
+    <button type="button" id="export" style="display: none;">Export as PDF</button>
+
     <script>
         $('#addProduct').on('click', function () {
-    const billId = $('#bill_id').val();
-    const customerId = $('#customer').val();
-    const productId = $('#product').val();
-    const quantity = $('#quantity').val();
-    const rate = $('#rate').val();
+            const billId = $('#bill_id').val();
+            const bill_no = $('#bill_no').val();
+            const customerId = $('#customer').val();
+            const productId = $('#product').val();
+            const quantity = $('#quantity').val();
+            const rate = $('#rate').val();
 
-    $.ajax({
-        url: '{% url "add_bill_item_ajax" %}',
-        method: 'POST',
-        data: {
-            bill_id: billId,
-            customer_id: customerId,
-            product_id: productId,
-            quantity: quantity,
-            rate: rate,
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-        },
-        success: function (response) {
-            if (!billId) {
-                // Set the bill_id for subsequent requests
-                $('#bill_id').val(response.bill_id);
-            }
+            $.ajax({
+                url: '{% url "add_bill_item_ajax" %}',
+                method: 'POST',
+                data: {
+                    bill_id: billId,
+                    bill_no: bill_no,
+                    customer_id: customerId,
+                    product_id: productId,
+                    quantity: quantity,
+                    rate: rate,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (!billId) {
+                        $('#bill_id').val(response.bill_id);
+                        $('#export').show();
+                    }
 
-            // Add product to the bill table
-            $('#billTable tbody').append(`
-                <tr>
-                    <td>${response.product_name}</td>
-                    <td>${response.quantity}</td>
-                    <td>${response.rate}</td>
-                    <td>${response.subtotal.toFixed(2)}</td>
-                </tr>
-            `);
+                    // Add product to the bill table
+                    $('#billTable tbody').append(`
+                        <tr>
+                            <td>${response.product_name}</td>
+                            <td>${response.quantity}</td>
+                            <td>${response.rate}</td>
+                            <td>${response.subtotal.toFixed(2)}</td>
+                        </tr>
+                    `);
 
-            // Update total
-            $('#billTotal').text(response.total.toFixed(2));
-        },
-        error: function () {
-            alert('Failed to add product.');
-        }
-    });
+                    // Update total
+                    $('#billTotal').text(response.total.toFixed(2));
+                },
+                error: function () {
+                    alert('Failed to add product.');
+                }
+            });
+        });
+
+        $('#export').on('click', function () {
+    const billID = $('#bill_id').val(); // Capture the bill ID
+
+    if (!billID) {
+        alert('Please ensure the bill ID is correct.');
+        return;
+    }
+
+    // Trigger PDF export with the correct URL
+    window.location.href = `/bills/pdf/${billID}/`;
 });
+
     </script>
 </body>
 </html>

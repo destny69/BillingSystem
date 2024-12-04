@@ -17,6 +17,7 @@ def create_bill(request):
 def add_bill_item_ajax(request):
     if request.method == 'POST':
         bill_id = request.POST.get('bill_id', None)
+        bill_no = request.POST.get('bill_no')
         customer_id = request.POST.get('customer_id')
         product_id = request.POST.get('product_id')
         quantity = int(request.POST.get('quantity', 1))
@@ -29,12 +30,12 @@ def add_bill_item_ajax(request):
         # Create or get the bill
         if not bill_id:  # If bill_id is not provided, create a new bill
             bill = Bill.objects.create(
-                bill_no=Bill.objects.count() + 1,
+                bill_no=bill_no,
                 customer_id=customer_id,
                 date=now().date(),
             )
         else:  # Retrieve existing bill
-            bill = get_object_or_404(Bill, id=bill_id)
+            bill = get_object_or_404(Bill, id=bill_id, )
 
         # Create or get the BillItem for this bill
         bill_item, created = BillItem.objects.get_or_create(bill=bill)
