@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill List</title>
+</head>
+<body>
+    <h1>customer details</h1>
+    <ul>
+        <li>{{bills_details.customer.name}}</li>
+        <li>{{bills_details.bill_no}}</li>
+        <li>{{bills_details.date}}</li>
+
+    </ul>
+    <h1>Bill List</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>product</th>
+                <th>Quantity</th>
+                <th>rate</th>
+                <th> Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td>{{ bill.product}}</td>
+                <td>{{ bill.quantity }}</td>
+                <td>{{ bill.rate }}</td>
+                <td>{{ bill.get_subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>Total: {}</p>
+    <a href="{% url 'create_bill' %}">Create New Bill</a>
+</body>
+</html>
