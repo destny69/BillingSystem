@@ -9,3 +9,6 @@ admin.site.register(Bill)
 admin.site.register(Customer)
 admin.site.register(BillItem)
 admin.site.register(BillItemProduct)
+
+admin.site.register(Credit)
+admin.site.register(Debit)

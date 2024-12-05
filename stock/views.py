@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Bill, BillItem, BillItemProduct, Product, Customer
+from .models import Bill, BillItem, BillItemProduct, Product, Customer, Credit
 from django.utils.timezone import now
 from weasyprint import HTML
 from django.template.loader import render_to_string
@@ -52,6 +52,17 @@ def add_bill_item_ajax(request):
         # Update BillItem total
         bill_item.total += bill_item_product.get_subtotal() # Convert subtotal to Decimal
         bill_item.save()
+
+        customer = Customer.objects.get(id=customer_id)
+       # Get or create a Credit instance for the given customer
+        credit  = Credit.objects.create(customer=customer)
+
+        # Update fields
+        credit.amount = bill_item.total
+        credit.date = now().date()
+
+        # Save the updated instance
+        credit.save()
 
         return JsonResponse({
             'bill_id': bill.id,
