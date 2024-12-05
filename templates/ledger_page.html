@@ -8,6 +8,13 @@
 <body>
     <h1>Customer Ledger - {{ customer.name }}</h1>
 
+    <h1>Add Debit for {{ customer.name }}</h1>
+
+    <form action="{% url 'debit' customer.id %}" method="post">
+        {% csrf_token %}
+        {{ debit_form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
     <!-- Filter by Date Range -->
     <form method="GET" action="{% url 'generate_ledger' customer.id %}">
         <label for="start_date">Start Date:</label>

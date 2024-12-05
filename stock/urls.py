@@ -7,5 +7,7 @@ urlpatterns = [
     path('bills/pdf/<int:bill_id>/', views.generate_bill_pdf, name='generate_bill_pdf'),
     # path('customer/<int:customer_id>/transactions/history', views.transaction_history, name='transaction_history'),
     path('customer/<int:customer_id>/transactions/', views.generate_ledger, name='generate_ledger'),
-]
+    path('debit/<int:customer_id>/', views.debit, name="debit"),
+
+  ] 
 

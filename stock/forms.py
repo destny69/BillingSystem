@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Bill, BillItem, BillItemProduct
+from .models import Bill, BillItem, BillItemProduct, Debit
 
 class BillForm(forms.ModelForm):
     class Meta:
@@ -20,3 +20,10 @@ BillItemProductFormSet = inlineformset_factory(
     extra=1,  # Number of empty forms to display
     can_delete=True  # Allow deletion of items
 )
+
+
+class DebitForm(forms.ModelForm):
+    class Meta:
+        model = Debit
+        fields = ['amount', 'date']
+        

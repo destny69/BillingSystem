@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, HttpResponse
+from django.shortcuts import render, get_object_or_404, HttpResponse,redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Bill, BillItem, BillItemProduct, Product, Customer, Credit, Debit
@@ -8,6 +8,9 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from datetime import datetime
 from django.db.models import Sum
+from .forms import *
+from django.contrib import messages
+
 
 def create_bill(request):
     products = Product.objects.all()
@@ -160,13 +163,34 @@ def generate_ledger(request, customer_id):
         except ValueError:
             # Handle invalid date input
             pass
-
+    debit_form = DebitForm()
     return render(request, 'ledger_page.html', {
         'customer': customer,
         'transactions': transactions,
         'opening_balance': opening_balance,
         'start_date': start_date,
-        'end_date': end_date
+        'end_date': end_date,
+        'debit_form':debit_form
     })
 
 
+
+def debit(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+
+    if request.method == "POST":
+        debit_form = DebitForm(request.POST)
+        if debit_form.is_valid():
+            debit_instance = debit_form.save(commit=False)
+            debit_instance.customer = customer
+            debit_instance.save()
+            
+            # Update customer total_debit
+            customer.total_debit += debit_instance.amount
+            customer.save()
+
+            messages.success(request, "Debit added successfully.")
+            return redirect("generate_ledger", customer_id=customer.id)
+
+
+   
